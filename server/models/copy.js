@@ -14,13 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   copy.init({
-    bookmarkid: DataTypes.INTEGER,
-    userid: DataTypes.INTEGER,
-    posting: DataTypes.STRING,
+    myPostringId: DataTypes.INTEGER,
+    content: DataTypes.TEXT,
     title: DataTypes.STRING,
     writer: DataTypes.STRING,
     category: DataTypes.STRING,
-    licecount: DataTypes.INTEGER
+    likeCount: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'copy',

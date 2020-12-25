@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   mypage.init({
-    bookmark: DataTypes.INTEGER,
-    userid: DataTypes.INTEGER
+    bookmarkId: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'mypage',

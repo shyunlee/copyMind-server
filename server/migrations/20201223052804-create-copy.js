@@ -8,14 +8,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      bookmarkid: {
+      myPostingId: {
         type: Sequelize.INTEGER
       },
-      userid: {
-        type: Sequelize.INTEGER
-      },
-      posting: {
-        type: Sequelize.STRING
+      content: {
+        type: Sequelize.TEXT
       },
       title: {
         type: Sequelize.STRING
@@ -26,7 +23,7 @@ module.exports = {
       category: {
         type: Sequelize.STRING
       },
-      licecount: {
+      likeCount: {
         type: Sequelize.INTEGER
       },
       createdAt: {
