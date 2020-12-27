@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
       this.hasMany(models.mypage,{
         foreignKey: 'id'
       })
       this.hasMany(models.copy,{
         foreignKey: 'id'
       })
+
     }
   };
   users.init({
