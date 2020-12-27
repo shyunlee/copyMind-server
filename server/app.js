@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+
 const session = require('express-session');
 
 const sign = require('./routes/sign');
@@ -20,6 +21,7 @@ models.sequelize.sync().then( () => {
   console.log(err);
 })
 
+
 app.use(cors({
     origin : true,
     methods : ["GET","POST","OPTIONS"],
@@ -30,6 +32,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+
 app.use( //세션 : 요청마다 개인의 저장공간
   session({
       secret: '@copymind', //비밀 키 저장
@@ -39,10 +43,13 @@ app.use( //세션 : 요청마다 개인의 저장공간
 );
 
 
+
 app.use('/sign', sign);
 app.use('/copy', copy);
 app.use('/user', user);
+
 app.use('/oauth', oauth);
+
 
 app.listen(8080);
 

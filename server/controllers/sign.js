@@ -1,3 +1,4 @@
+
 const {users} = require('../models/index');
 
 module.exports = {
@@ -49,5 +50,6 @@ module.exports = {
         catch(err){
             res.status(500).send({message : 'server error'});
         }
+
     }
 }
