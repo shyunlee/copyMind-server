@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.mypage,{
         foreignKey: 'id'
       })
+      
       this.hasMany(models.copy,{
         foreignKey: 'id'
       })

@@ -11,6 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+     this.belongsTo(models.users, {
+       foreignkey:'userId'
+     })
+     
+     this.hasOne(models.copy, {
+       foreignKey: 'bookmarkId'
+     })
+
     }
   };
   mypage.init({

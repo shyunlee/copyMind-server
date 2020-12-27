@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class copy extends Model {
     /**
@@ -11,6 +12,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      this.belongsTo(models.users,{
+        foreignKey: 'myPostingId'
+      })
+      
+      this.belongsTo(models.mypage,{
+        foreignKey:'id'
+      })
+
     }
   };
   copy.init({
