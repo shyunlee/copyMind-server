@@ -13,7 +13,8 @@ module.exports = {
     // -- user가 posting 한 글들의 수 구하기
     // select count(1) from users u inner join copies cp on u.id = cp.mypostingid
     // where u.id = userData.id
-    try {
+    try { 
+      
       if (!req.session.userId) {
         res.status(401).send({message:"존재하지 않는 유저입니다"});
       } else {

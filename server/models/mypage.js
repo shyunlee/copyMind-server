@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
      this.belongsTo(models.users, {
        foreignkey:'userId'
      })
+     
      this.hasOne(models.copy, {
        foreignKey: 'bookmarkId'
      })

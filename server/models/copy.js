@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.users,{
         foreignKey: 'myPostingId'
       })
+      
       this.belongsTo(models.mypage,{
         foreignKey:'id'
       })
