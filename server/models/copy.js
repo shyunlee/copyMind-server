@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
 
       this.belongsTo(models.users,{
-        foreignKey: 'myPostingId'
+        foreignKey: 'id',
+        sourceKey : 'myPostingId'
       })
       
       this.belongsTo(models.mypage,{
@@ -24,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   copy.init({
-    myPostringId: DataTypes.INTEGER,
+    myPostingId: DataTypes.INTEGER,
     content: DataTypes.TEXT,
     title: DataTypes.STRING,
     writer: DataTypes.STRING,
