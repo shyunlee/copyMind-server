@@ -5,9 +5,9 @@ const { Op } = require("sequelize");
 module.exports = {
     signInController : async (req, res)=>{
         try {
-            const {Email , Password} = req.body
+            const {email , password} = req.body
             const checkExist = await users.findOne(
-                {where :{email : Email, password : Password}}
+                {where :{email : email, password : password}}
             );
             if(!checkExist){
                 res.status(401).send({message : 'user not found'});
