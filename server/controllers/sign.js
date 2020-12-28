@@ -1,5 +1,6 @@
 
-const {users} = require('../models/index');
+const {users, copy} = require('../models/index');
+const { Op } = require("sequelize");
 
 module.exports = {
     signInController : async (req, res)=>{
@@ -11,7 +12,7 @@ module.exports = {
             if(!checkExist){
                 res.status(401).send({message : 'user not found'});
             };
-            req.session.userId = Email
+            req.session.userId = checkExist.id;
             res.send({message : 'ok'});
         }
         catch(err){
@@ -21,15 +22,15 @@ module.exports = {
 
     signUpController : async (req, res)=>{
         try {
-            const {Email, Password, Name} =req.body;
+            const {email, password, name} =req.body;
             const checkExist = await users.findOne(
-                {where : {email : Email}}
+                {where : {email : email}}
             );
             if(checkExist){
                 return res.status(409).send({message : '이미 존재하는 이메일입니다'});
             };
             await users.create(
-                {email : Email, password : Password, userName : Name}
+                {email : email, password : password, userName : name}
             );
             // return res.redirect('http://localhost:3000');
             return res.send({message : 'signup seccess!'});
@@ -39,7 +40,7 @@ module.exports = {
         }
     },
 
-    logoutController : async (req, res)=>{
+    signoutController : async (req, res)=>{
         try {
             if(!req.session.userId){
                 res.status(400).send({message : `you're not currently login`});
