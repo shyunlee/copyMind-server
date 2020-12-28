@@ -56,25 +56,13 @@ module.exports = {
 
   myPostingController: async (req, res) => {
     try {
-      const userInfo = await users.findOne({
-        where: {
-          email: req.session.userId,
-        },
-      });
       const myPostingContents = await copy.findAll({
-        include: [users],
-        where: {
-          myPostingId: userInfo.dataValues.id,
-        },
+        include: [{
+          model : users,
+          right : true
+        }]
       });
-      res.status(200).send({
-        title: myPostingContents.title,
-        writer: myPostingContents.writer,
-        posting: myPostingContents.content,
-        category: myPostingContents.category,
-        copyId: myPostingContents.id,
-        likeCount: myPostingContents.likeCount, //likecount 구현 필요
-      });
+      res.status(200).send({result : myPostingContents});
     } catch (err) {
       res.status(500).send({ message: "server error" });
     }

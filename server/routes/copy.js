@@ -6,7 +6,7 @@ const controllers = require('../controllers/copy');
 
 
 
-router.get('/getcopy', controllers.getCopyController)
+router.post('/getcopy', controllers.getCopyController)
 router.post('/postcopy', controllers.postCopyController)
 router.post('/addlike', controllers.addLikeController)
 
