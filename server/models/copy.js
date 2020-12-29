@@ -14,14 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
 
       this.belongsTo(models.users,{
-        foreignKey: 'id',
-        sourceKey : 'myPostingId'
-      })
-      
-      this.belongsTo(models.mypage,{
-        foreignKey:'id'
+        foreignKey : 'id',
       })
 
+      this.belongsToMany(models.users,{
+        through : 'userBookmark',
+        foreignKey : 'bookmarkId'
+      })
     }
   };
   copy.init({

@@ -55,17 +55,19 @@ module.exports = {
   },
 
   myPostingController: async (req, res) => {
-    try {
+    // try {
       const myPostingContents = await copy.findAll({
         include: [{
           model : users,
-          right : true
-        }]
+          left : true
+        }],
+        attributes : ['title', 'content', 'writer', 'category', 'likeCount', 'id'],
       });
       res.status(200).send({result : myPostingContents});
-    } catch (err) {
-      res.status(500).send({ message: "server error" });
-    }
+      console.log(myPostingContents);
+    // } catch (err) {
+    //   res.status(500).send({ message: "server error" });
+    // }
   },
 
   bookMarkController: async (req, res) => {
