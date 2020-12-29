@@ -22,15 +22,15 @@ module.exports = {
 
     signUpController : async (req, res)=>{
         try {
-            const {email, password, name} =req.body;
+            const {Email, Password, Name} =req.body;
             const checkExist = await users.findOne(
-                {where : {email : email}}
+                {where : {email : Email}}
             );
             if(checkExist){
                 return res.status(409).send({message : '이미 존재하는 이메일입니다'});
             };
             await users.create(
-                {email : email, password : password, userName : name}
+                {email : Email, password : Password, userName : Name}
             );
             // return res.redirect('http://localhost:3000');
             return res.send({message : 'signup seccess!'});
