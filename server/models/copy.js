@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
 
       this.belongsTo(models.users,{
-        foreignKey : 'id',
+        foreignKey : 'myPostingId',
       })
 
       this.belongsToMany(models.users,{

@@ -1,5 +1,4 @@
-
-const { users, copy, mypage } = require("../models");
+const { users, copy, Sequelize } = require('../models');
 
 module.exports = {
   userInfoController: async (req, res) => {
@@ -55,50 +54,41 @@ module.exports = {
   },
 
   myPostingController: async (req, res) => {
-    // try {
+    try {
       const myPostingContents = await copy.findAll({
+        attributes : ['title', 'content', 'writer', 'category', 'likeCount', 'id'],
         include: [{
           model : users,
-          left : true
-        }],
-        attributes : ['title', 'content', 'writer', 'category', 'likeCount', 'id'],
+          where : {id : req.session.userId}
+        }]
       });
-      res.status(200).send({result : myPostingContents});
-      console.log(myPostingContents);
-    // } catch (err) {
-    //   res.status(500).send({ message: "server error" });
-    // }
+      const result = myPostingContents.map(data=>{
+        delete data.dataValues.user
+        return data.dataValues
+      })
+      // FROM copy INNER JOIN users ON copy.myPostingId = copy.id
+      console.log({result : result})
+      res.status(200).send({result : result});
+    }
+    catch (err) {
+      res.status(500).send({ message: "server error" });
+    }
   },
 
   bookMarkController: async (req, res) => {
-    try {
-      const userInfo = await users.findOne({
-        where: {
-          email: req.session.userId,
-        },
-      });
-      const mypageInfo = await mypage.findOne({
-        where: {
-          userId: userInfo.dataValues.id,
-        },
-      });
-      const bookMarkContents = await copy.findAll({
-        include: [mypage],
-        where: {
-          id: mypageInfo.dataValues.bookmarkId,
-        },
-      });
-      res.status(200).send({
-        title: bookMarkContents.title,
-        writer: bookMarkContents.writer,
-        posting: bookMarkContents.content,
-        category: bookMarkContents.category,
-        copyId: bookMarkContents.id,
-        likeCount: bookMarkContents.likeCount,
-      });
-    } catch (err) {
-      res.status(500).send({ message: "server error" });
-    }
+
+    await copy.findAll({
+      attributes : ['title', 'content', 'writer', 'category', 'likeCount', 'id'],
+      include : [{
+        model : users,
+        through : {
+          
+        }
+      }]
+    })
+
+
+
   },
 };
 
