@@ -115,24 +115,27 @@ module.exports = {
     },
 
     addLikeController : async (req, res)=>{
+        console.log(req.body)
         //likeCount +1 응답값 반환 // api 문서 수정
-        const checkBookmark = await userBookmark.findOne({
-            where : { [Op.and] : [
-                {bookmarkId : req.body.id},
-                {userId : req.session.userId}
-            ]}
-        })
-        if(checkBookmark){
-            res.status(404).send({message : 'exist bookmark'});
-        }
-        await userBookmark.create({
-            userId : req.session.userId,
-            bookmarkId : req.body.id
-        })
-        res.send({message : 'like success'});
+        // const checkBookmark = await userBookmark.findOne({
+        //     where : { [Op.and] : [
+        //         {bookmarkId : req.body.id},
+        //         {userId : req.session.userId}
+        //     ]}
+        // })
+        // if(checkBookmark){
+        //     res.status(404).send({message : 'exist bookmark'});
+        // }
+        // await userBookmark.create({
+        //     userId : req.session.userId,
+        //     bookmarkId : req.body.id
+        // })
+        res.send({message : 'like success', likeCount: 5});
     },
 
     removeLikeController : async (req, res)=>{
+        console.log(req.body)
+        res.send({message : 'unlike success', likeCount:1});
         //likeCount -1 응답값 반환 // api 문서 수정
     }
 
