@@ -90,7 +90,6 @@ module.exports = {
     },
 
     postCopyController : async (req, res)=>{
-        console.log(req.body.writer);
         try{
             const userId = await users.findOne({
                 attributes : ['id'],
@@ -114,26 +113,55 @@ module.exports = {
         }
     },
 
-    addLikeController : async (req, res)=>{
-        //likeCount +1 응답값 반환 // api 문서 수정
-        const checkBookmark = await userBookmark.findOne({
-            where : { [Op.and] : [
-                {bookmarkId : req.body.id},
-                {userId : req.session.userId}
-            ]}
-        })
-        if(checkBookmark){
-            res.status(404).send({message : 'exist bookmark'});
+    addLikeController: async (req, res) => {
+        try {
+          await userBookmark.create({
+            userId: req.session.userId,
+            bookmarkId: req.body.id,
+          });
+            await copy.update(
+              { likeCount: Sequelize.literal("likeCount + 1") },
+              { where: { id: req.body.id } }
+            );
+          const addlikeCount = await copy.findOne({
+            attributes: ["likeCount"],
+            where: {
+              id: req.body.id,
+            },
+          });
+          res.status(200).send({
+            message: "like success!",
+            likeCount: `${addlikeCount.likeCount}`,
+          });
+        } catch (err) {
+          res.status(500).send({ messsage: "server err" });
         }
-        await userBookmark.create({
-            userId : req.session.userId,
-            bookmarkId : req.body.id
-        })
-        res.send({message : 'like success'});
     },
 
-    removeLikeController : async (req, res)=>{
-        //likeCount -1 응답값 반환 // api 문서 수정
-    }
-
+    removeLikeController: async (req, res) => {
+        try {
+          await userBookmark.destroy({
+            where: {
+              userId: req.session.userId,
+              bookmarkId: req.body.id,
+            },
+          });
+            await copy.update(
+              { likeCount: Sequelize.literal("likeCount - 1") },
+              { where: { id : req.body.id } }
+            );
+          const subtractlikeCount = await copy.findOne({
+            attributes: ["likeCount"],
+            where: {
+              id: req.body.id,
+            },
+          });
+          res.status(200).send({
+              message: "remove success",
+              likeCount: `${subtractlikeCount.likeCount}`,
+            });
+        } catch (err) {
+          res.status(500).send({ message: "server err" });
+        }
+      },
 }

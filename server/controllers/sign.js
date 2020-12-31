@@ -13,7 +13,7 @@ module.exports = {
             .digest('hex')
 
             const checkExist = await users.findOne(
-                {where :{email : email, password : password}}
+                {where :{email : email, password : hashPassword}}
             );
 
             if(!checkExist){
@@ -70,7 +70,7 @@ module.exports = {
             if(!req.session.userId){
                 res.status(400).send({message : `you're not currently login`});
             }
-            
+
             req.session.destroy();
             res.send({message : 'successfully log-out!'});
         }
