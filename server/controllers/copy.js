@@ -1,15 +1,10 @@
-const { users, copy, mypage, Sequelize, sequelize } = require('../models');
+const { users, copy, Sequelize, userBookmark } = require('../models');
 const { Op } = require("sequelize");
 
 module.exports = {
     getCopyController : async (req, res)=>{
-        const userCount = await copy.count({
-            where : {id : 
-                {[Op.gt]:0}
-            }
-        })
-        if(req.session.userId){
-            if(req.body.pathName === 'view'){
+        if(req.session.userId){ //회원
+            if(req.body.pathName === 'view'){ //today`s copy 버튼
                 try {
                     const randomContent = await copy.findOne({
                         attributes : ['title', 'writer', 'content', 'category', 'likeCount', 'id'],
@@ -18,12 +13,12 @@ module.exports = {
                         ],
                         limit : 1,
                     })
-                    res.send({ return : [randomContent] })
+                    res.send({ result : [randomContent] })
                 }
                 catch(err){
                     res.status(500).send({message : 'server err'});
                 }
-            }else{
+            }else{ // 메뉴 버튼
                 try {
                     const content = await copy.findAll({
                         attributes : ['title', 'writer', 'content', 'category', 'likeCount', 'id'],
@@ -43,20 +38,15 @@ module.exports = {
                     res.status(500).send({message : 'server err'});
                 }
             }   
-        }else if(!req.session.userId && !req.session.nonMember){
+        }else if(!req.session.userId){ // 비회원
             if(req.body.pathName === 'view'){
                 try{
-                    const limit= Math.floor(Math.random() * userCount) -10;
-                    if(limit < 0){
-                        limit = 0;
-                    }
-                    req.session.nonMember = limit;
                     const limitContent = await copy.findOne({
                         attributes : ['title', 'writer', 'content', 'category', 'likeCount', 'id'],
                         where : { id :
                             {
-                                [Op.gte] : limitContent,
-                                [Op.et] : limitContent+10
+                                [Op.lt] : 20,
+                                [Op.gt] : 0,
                             } 
                         },
                         order : [
@@ -64,24 +54,33 @@ module.exports = {
                         ],
                         limit : 1,
                     })
-                    res.json({result : [limitContent]})
+                    console.log({result : [limitContent.dataValues]})
+                    res.json({result : [limitContent.dataValues]})
                 }
                 catch(err){
                     res.status(500).send({message : 'server err'});
                 }
             }else{
                 try {
-                    const limit = req.session.nonMember
                     const limitContent = await copy.findAll({
                         attributes : ['title', 'writer', 'content', 'category', 'likeCount', 'id'],
                         where : { 
                             [Op.and] : [
                                 {category : req.body.pathName},
-                                { id : {[Op.gte]: limit, [Op.et] : limit+10} }
+                                { id : 
+                                    {
+                                        [Op.gt]: 0, 
+                                        [Op.lt] :10 
+                                    } 
+                                }
                             ]
                         },
                     })
-                    res.json({result : [limitContent]})
+                    const result = limitContent.map(data=>{
+                        return data.dataValues;
+                    })
+                    res.json({result : result})
+                    console.log({result : result})
                 }
                 catch(err){
                     res.status(500).send({message : 'server err'});
@@ -97,7 +96,7 @@ module.exports = {
                 attributes : ['id'],
                 where : {
                     id : {
-                        [Op.eq] : req.session.userId
+                        [Op.eq] : req.session.userId 
                     }
                 }
             })
@@ -116,30 +115,25 @@ module.exports = {
     },
 
     addLikeController : async (req, res)=>{
-        try{
-            await mypage.create({
-                bookmarkId : req.body.id, 
-                userId : req.session.userId
-            });
-            res.json({message : 'like success!'})
+        //likeCount +1 응답값 반환 // api 문서 수정
+        const checkBookmark = await userBookmark.findOne({
+            where : { [Op.and] : [
+                {bookmarkId : req.body.id},
+                {userId : req.session.userId}
+            ]}
+        })
+        if(checkBookmark){
+            res.status(404).send({message : 'exist bookmark'});
         }
-        catch(err){
-            res.status(500).send({message : 'server err'});
-        }
+        await userBookmark.create({
+            userId : req.session.userId,
+            bookmarkId : req.body.id
+        })
+        res.send({message : 'like success'});
     },
 
     removeLikeController : async (req, res)=>{
-        try {
-            await mypage.destroy({
-                where : {
-                    bookmarkId : req.body.id
-                }
-            })
-            res.json({message : 'remove success!'})
-        }
-        catch(err){
-            res.status(500).send({message : 'server err'});
-        }
+        //likeCount -1 응답값 반환 // api 문서 수정
     }
 
 }
