@@ -29,7 +29,11 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     writer: DataTypes.STRING,
     category: DataTypes.STRING,
-    likeCount: DataTypes.INTEGER,
+    likeCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: '0'
+    }
   }, {
     sequelize,
     modelName: 'copy',
