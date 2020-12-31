@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const copy = require('./copy');
 module.exports = (sequelize, DataTypes) => {
   class users extends Model {
     /**
@@ -11,12 +12,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.copy, {
+        foreignKey: 'id'
+      })
+
       this.belongsToMany(models.copy,{
         through : 'userBookmark',
         foreignKey : 'userId'
       })
     }
   };
+  
   users.init({
     email: DataTypes.STRING,
     password: DataTypes.STRING,
