@@ -1,4 +1,4 @@
-const { users, copy, Sequelize } = require('../models');
+const { users, copy, Sequelize, userBookmark } = require('../models');
 const { Op } = require("sequelize");
 
 module.exports = {
@@ -70,7 +70,7 @@ module.exports = {
                                 { id : 
                                     {
                                         [Op.gt]: 0, 
-                                        [Op.lt] :10
+                                        [Op.lt] :10 
                                     } 
                                 }
                             ]
@@ -96,7 +96,7 @@ module.exports = {
                 attributes : ['id'],
                 where : {
                     id : {
-                        [Op.eq] : req.session.userId
+                        [Op.eq] : req.session.userId 
                     }
                 }
             })
@@ -115,11 +115,25 @@ module.exports = {
     },
 
     addLikeController : async (req, res)=>{
-
+        //likeCount +1 응답값 반환 // api 문서 수정
+        const checkBookmark = await userBookmark.findOne({
+            where : { [Op.and] : [
+                {bookmarkId : req.body.id},
+                {userId : req.session.userId}
+            ]}
+        })
+        if(checkBookmark){
+            res.status(404).send({message : 'exist bookmark'});
+        }
+        await userBookmark.create({
+            userId : req.session.userId,
+            bookmarkId : req.body.id
+        })
+        res.send({message : 'like success'});
     },
 
     removeLikeController : async (req, res)=>{
-
+        //likeCount -1 응답값 반환 // api 문서 수정
     }
 
 }
