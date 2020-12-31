@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       })
 
       this.belongsToMany(models.copy,{
-        through : 'userBookmark',
+        through : models.userBookmark,
         foreignKey : 'userId'
       })
     }
