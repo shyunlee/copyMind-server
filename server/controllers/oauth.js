@@ -31,7 +31,6 @@ module.exports = {
         const userName = await users.findOne({
             where : {userName : login}
         })
-        console.log('hi')
         if(userName){
             req.session.save(()=>{
                 req.session.userId = userName.id;
@@ -39,21 +38,20 @@ module.exports = {
                 return res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'});
             })                
         }else{
-            await users.create({
+            const createUser = await users.create({
                 userName : login , email : email
             })
-            req.session.userId = userName.id;
+            req.session.userId = createUser.id;
             res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'}); 
         }
     },
 
     googleController : async (req, res)=>{
         const requestAccessToken=qs.stringify({
-            scope:"profile",
             code:req.body.authorizationCode,
             client_id:googleClientId,
             client_secret:googleClientSecret,
-            redirect_uri:"http://localhost:3000",
+            redirect_uri:"http://copymind.ga:8080",
             grant_type:"authorization_code",
         })
         console.log("requestAccessToken : ",requestAccessToken)
@@ -69,13 +67,13 @@ module.exports = {
         })
         if(checkExisting){
             req.session.userId = checkExisting.id
-            res.send({accessToken : accessToken.data.access_token, message : 'ok'})
+            return res.send({accessToken : accessToken.data.access_token, message : 'ok'})
         }else{
-            req.session.userId = checkExisting.id
-            await users.create({
+            const createUser = await users.create({
                 email : email , userName : name
-            })
-            res.send({accessToken : accessToken.data.access_token, message : 'ok'})
+            });
+            req.session.userId = createUser.id
+            return res.send({accessToken : accessToken.data.access_token, message : 'ok'})
         }
     }
 }
