@@ -10,13 +10,16 @@ module.exports = {
         res.status(401).send({message : 'user not exist'});
       }
 
-      const bookmarkCount = await users.findAndCountAll({
+      let bookmarkCount = await users.findAndCountAll({
         where : {id : req.session.userId},
         attributes : ['id', 'email', 'userName', 'createdAt', 'updatedAt'],
         include : {
           model : copy
         }
       })
+      if(bookmarkCount.rows[0].copies.length === 0){
+        bookmarkCount.count = 0;
+      }
       delete bookmarkCount.rows[0].dataValues.copies
       const postingCount = await copy.findAndCountAll({
         where : {myPostingId : req.session.userId}

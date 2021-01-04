@@ -54,7 +54,6 @@ module.exports = {
                         ],
                         limit : 1,
                     })
-                    console.log({result : [limitContent.dataValues]})
                     res.json({result : [limitContent.dataValues]})
                 }
                 catch(err){
@@ -80,7 +79,6 @@ module.exports = {
                         return data.dataValues;
                     })
                     res.json({result : result})
-                    console.log({result : result})
                 }
                 catch(err){
                     res.status(500).send({message : 'server err'});
@@ -91,6 +89,9 @@ module.exports = {
 
     postCopyController : async (req, res)=>{
         try{
+            console.log(req.body)
+            console.log(req.session.userId);
+            //req.body값 모두 제목으로 들어옴 
             const userId = await users.findOne({
                 attributes : ['id'],
                 where : {

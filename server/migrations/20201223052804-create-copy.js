@@ -24,7 +24,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       likeCount: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: '0'
       },
       createdAt: {
         allowNull: false,
