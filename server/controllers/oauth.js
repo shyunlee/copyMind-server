@@ -1,5 +1,7 @@
-const { users, copy, mypage } = require('../models');
+const { users } = require('../models');
 const axios = require('axios');
+const qs = require('querystring')
+const jwtDecode = require('jwt-decode');
 
 const githubClientID = process.env.GITHUB_CLIENT_ID;
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
@@ -8,45 +10,72 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 module.exports = {
     githubController : async (req, res)=>{
-
         const authorizationCode = req.body.authorizationCode;
-        
-        axios.post(`https://github.com/login/oauth/access_token`,
+        const accessToken = await axios.post(`https://github.com/login/oauth/access_token`,
         {
             client_id:githubClientID,
             client_secret : githubClientSecret,
             code : authorizationCode
         },
         {
-            headers : {'Content-Type' : 'application/json'}
+            headers : {Accept : 'application/json'}
         }
         )
-        .then(result => {
-            accessToken = result.data.access_token;
-            res.status(200).send({accessToken : accessToken, message : 'ok'});
+        const userInfo = await axios.get('https://api.github.com/user',{
+            headers :{
+                Accept: `application/json`,
+                authorization : `token ${accessToken.data.access_token}`
+            }
+        });
+        const {login, email}  = userInfo.data;
+        const userName = await users.findOne({
+            where : {userName : login}
         })
-        .catch(err => {
-            res.status(404).send({message : 'not found accessToken'});
-        })
+        console.log('hi')
+        if(userName){
+            req.session.save(()=>{
+                req.session.userId = userName.id;
+                console.log(accessToken.data.access_token)
+                return res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'});
+            })                
+        }else{
+            await users.create({
+                userName : login , email : email
+            })
+            req.session.userId = userName.id;
+            res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'}); 
+        }
     },
 
     googleController : async (req, res)=>{
-        axios.post(`https://oauth2.googleapis.com/oauth2/v4/token`,
+        const requestAccessToken=qs.stringify({
+            scope:"profile",
+            code:req.body.authorizationCode,
+            client_id:googleClientId,
+            client_secret:googleClientSecret,
+            redirect_uri:"http://localhost:3000",
+            grant_type:"authorization_code",
+        })
+        console.log("requestAccessToken : ",requestAccessToken)
+        const accessToken = await axios.post(
+            'https://oauth2.googleapis.com/token',
+            requestAccessToken,
         {
-            client_id : googleClientId,
-            client_secret : googleClientSecret,
-            redirect_uri : `http://copymind.s3-website.ap-northeast-2.amazonaws.com`,
-            grant_type : req.body.authorizationCode
-        },
-        {
-            headers : {'Content-Type' : 'application/x-www-form-urlencoded'}
+            headers : { Accept : 'application/json'}
         })
-        .then(result =>{
-            accessToken = result.data.access_token;
-            res.status(200).send({accessToken: accessToken, message : 'ok'})
+        const {email , name} = jwtDecode(accessToken.data.id_token);
+        const checkExisting = await users.findOne({
+            where : { email : email , userName : name}
         })
-        .catch(err=>{
-            res.status(400).send({message : 'not fount accessToken'});
-        })
+        if(checkExisting){
+            req.session.userId = checkExisting.id
+            res.send({accessToken : accessToken.data.access_token, message : 'ok'})
+        }else{
+            req.session.userId = checkExisting.id
+            await users.create({
+                email : email , userName : name
+            })
+            res.send({accessToken : accessToken.data.access_token, message : 'ok'})
+        }
     }
 }

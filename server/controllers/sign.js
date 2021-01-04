@@ -19,9 +19,10 @@ module.exports = {
             if(!checkExist){
                 res.status(401).send({message : 'user not found'});
             };
-
-            req.session.userId = checkExist.id;
-            res.send({message : 'ok'});
+            req.session.save(()=>{
+                req.session.userId = checkExist.id;
+                res.send({message : 'ok'});  
+            })
         }
         catch(err){
             res.status(500).send({message : "server error"});
