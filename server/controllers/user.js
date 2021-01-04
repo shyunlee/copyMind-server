@@ -17,14 +17,17 @@ module.exports = {
           model : copy
         }
       })
-      delete bookmarkCount.rows[0].dataValues.copies
+      console.log
+
+      
       const postingCount = await copy.findAndCountAll({
         where : {myPostingId : req.session.userId}
       })
 
       let userInfo = bookmarkCount.rows[0].dataValues
-      userInfo.bookmarkCount = bookmarkCount.count;
+      userInfo.bookmarkCount = userInfo.copies.length === 0?0:bookmarkCount.count;
       userInfo.postingCount = postingCount.count;
+      delete bookmarkCount.rows[0].dataValues.copies
       res.send(userInfo)
     }
     catch(err){

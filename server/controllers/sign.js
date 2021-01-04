@@ -5,6 +5,7 @@ const crypto = require('crypto');
 
 module.exports = {
     signInController : async (req, res)=>{
+        console.log(req.body)
         try {
             const {email , password} = req.body
 
@@ -20,8 +21,10 @@ module.exports = {
                 res.status(401).send({message : 'user not found'});
             };
 
-            req.session.userId = checkExist.id;
-            res.send({message : 'ok'});
+            req.session.save(() => {
+                req.session.userId = checkExist.id;
+                res.status(200).send({message : 'ok'});
+            })
         }
         catch(err){
             res.status(500).send({message : "server error"});
@@ -29,6 +32,7 @@ module.exports = {
     },
 
     signUpController : async (req, res)=>{
+        console.log(req.body)
         try {
             const {email, password, userName} =req.body;
 

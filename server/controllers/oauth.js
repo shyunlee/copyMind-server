@@ -8,26 +8,45 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 module.exports = {
     githubController : async (req, res)=>{
-
         const authorizationCode = req.body.authorizationCode;
-        
-        axios.post(`https://github.com/login/oauth/access_token`,
+        console.log(authorizationCode)
+        const accessToken = await axios.post('https://github.com/login/oauth/access_token',
         {
             client_id:githubClientID,
             client_secret : githubClientSecret,
             code : authorizationCode
         },
         {
-            headers : {'Content-Type' : 'application/json'}
+            headers : {Accept : 'application/json'}
         }
         )
-        .then(result => {
-            accessToken = result.data.access_token;
-            res.status(200).send({accessToken : accessToken, message : 'ok'});
+        const userInfo = await axios.get('https://api.github.com/user',{
+            headers :{
+                Accept: 'application/json',
+                authorization : `token ${accessToken.data.access_token}`
+            }
+        });
+        const {login, email}  = userInfo.data;
+        console.log(login, email)
+        const userName = await users.findOne({
+            where : {userName : login}
         })
-        .catch(err => {
-            res.status(404).send({message : 'not found accessToken'});
-        })
+        console.log(userName)
+        if(userName){
+            req.session.save(()=>{
+                req.session.userId = userName.id;
+                console.log(accessToken.data.access_token)
+                res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'});
+            })
+        }else{
+            console.log('work')
+
+            await users.create({
+                userName : login , email: email
+            })
+            req.session.userId = userName.id;
+            res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'});
+        }
     },
 
     googleController : async (req, res)=>{

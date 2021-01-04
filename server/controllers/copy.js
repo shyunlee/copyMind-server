@@ -114,6 +114,7 @@ module.exports = {
     },
 
     addLikeController: async (req, res) => {
+        console.log('addlike', req.body)
         try {
           await userBookmark.create({
             userId: req.session.userId,
@@ -139,6 +140,7 @@ module.exports = {
     },
 
     removeLikeController: async (req, res) => {
+        console.log('remove like', req.body)
         try {
           await userBookmark.destroy({
             where: {
