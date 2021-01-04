@@ -3,11 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
-    "start": "nodemon ./bin/www"
-=======
     "start": "nodemon ./app.js"
->>>>>>> d812a32e45355f8825dc57734eb18ca6e295114f
   },
   "dependencies": {
     "axios": "^0.21.1",
