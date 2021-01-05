@@ -130,23 +130,30 @@ module.exports = {
               id: req.body.id,
             },
           });
+          const bookmarkId = await userBookmark.findAll({
+              where : {userId : req.session.userId}
+          })
+          const bookmarkList = bookmarkId.map(data=>{
+              return data.bookmarkId
+          })
           res.status(200).send({
             message: "like success!",
             likeCount: `${addlikeCount.likeCount}`,
+            bookmarkList : bookmarkList
           });
-        } catch (err) {
-          res.status(500).send({ messsage: "server err" });
+        } 
+        catch (err) {
+          res.status(500).send({ messsage: "server err"});
         }
     },
-
     removeLikeController: async (req, res) => {
         try {
-          await userBookmark.destroy({
-            where: {
-              userId: req.session.userId,
-              bookmarkId: req.body.id,
-            },
-          });
+            await userBookmark.destroy({
+              where: {
+                userId: req.session.userId,
+                bookmarkId: req.body.id,
+              },
+            });
             await copy.update(
               { likeCount: Sequelize.literal("likeCount - 1") },
               { where: { id : req.body.id } }
@@ -157,9 +164,16 @@ module.exports = {
               id: req.body.id,
             },
           });
+        const bookmarkId = await userBookmark.findAll({
+            where : {userId : req.session.userId}
+        })
+        const bookmarkList = bookmarkId.map(data=>{
+            return data.bookmarkId
+        })
           res.status(200).send({
               message: "remove success",
               likeCount: `${subtractlikeCount.likeCount}`,
+              bookmarkList : bookmarkList
             });
         } catch (err) {
           res.status(500).send({ message: "server err" });
