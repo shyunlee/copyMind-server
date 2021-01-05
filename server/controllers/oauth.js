@@ -34,7 +34,6 @@ module.exports = {
         if(userName){
             req.session.save(()=>{
                 req.session.userId = userName.id;
-                console.log(accessToken.data.access_token)
                 return res.status(200).send({accessToken : accessToken.data.access_token, message : 'ok'});
             })                
         }else{
@@ -54,7 +53,6 @@ module.exports = {
             redirect_uri:"http://copymind.ga:8080",
             grant_type:"authorization_code",
         })
-        console.log("requestAccessToken : ",requestAccessToken)
         const accessToken = await axios.post(
             'https://oauth2.googleapis.com/token',
             requestAccessToken,
