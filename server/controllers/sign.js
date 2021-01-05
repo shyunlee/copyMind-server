@@ -1,5 +1,4 @@
-
-const {users} = require('../models/index');
+const {users, copy} = require('../models/index');
 const { Op } = require("sequelize");
 const crypto = require('crypto');
 
@@ -12,6 +11,18 @@ module.exports = {
             .update(password)
             .digest('hex')
 
+            let bookmarkCount = await users.findAndCountAll({
+                where : {email : email},
+                attributes : ['id', 'email', 'userName', 'createdAt', 'updatedAt'],
+                include : {
+                  model : copy
+                }
+            })
+
+            const bookmarkList = bookmarkCount.rows[0].copies.map(data=>{
+                return data.dataValues.id
+            })
+
             const checkExist = await users.findOne(
                 {where :{email : email, password : hashPassword}}
             );
@@ -19,9 +30,10 @@ module.exports = {
             if(!checkExist){
                 res.status(401).send({message : 'user not found'});
             };
+
             req.session.save(()=>{
                 req.session.userId = checkExist.id;
-                res.send({message : 'ok'});  
+                res.send({message : 'ok', bookmarkList : bookmarkList});  
             })
         }
         catch(err){
