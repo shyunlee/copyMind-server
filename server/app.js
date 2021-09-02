@@ -43,16 +43,9 @@ app.use( //세션 : 요청마다 개인의 저장공간
 );
 
 app.use('/', express.static(__dirname + '/public'));
-<<<<<<< HEAD
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
-=======
- app.get('/*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'public', 'index.html'))
-  })
-
->>>>>>> 04e70527967d51835203c701585e1414aa0354aa
 
 app.use('/sign', sign);
 app.use('/copy', copy);

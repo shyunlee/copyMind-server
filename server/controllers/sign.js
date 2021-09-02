@@ -33,6 +33,7 @@ module.exports = {
 
             req.session.save(()=>{
                 req.session.userId = checkExist.id;
+                console.log(bookmarkList)
                 res.send({message : 'ok', bookmarkList : bookmarkList});  
             })
         }
