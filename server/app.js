@@ -15,15 +15,15 @@ const app = express();
 const models = require("./models/index.js");
 
 models.sequelize.sync().then( () => {
-  console.log(" DB 연결 성공");
+  console.log(" DB Connected");
 }).catch(err => {
-  console.log("연결 실패");
+  console.log("DB Connection Failed");
   console.log(err);
 })
 
 
 app.use(cors({
-    origin : true,
+    origin : ['http://localhost:3000'],
     methods : ["GET","POST","OPTIONS"],
     credentials : true
 }))
@@ -42,18 +42,19 @@ app.use( //세션 : 요청마다 개인의 저장공간
     })
 );
 
-app.use('/', express.static(__dirname + '/public'));
-app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'))
-})
+// app.use('/', express.static(__dirname + '/public'));
+// app.get('/*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public', 'index.html'))
+// })
 
 app.use('/sign', sign);
 app.use('/copy', copy);
 app.use('/user', user);
-
 app.use('/oauth', oauth);
 
-
-app.listen(8080);
+const serverPort = parseInt(process.env.PORT)
+app.listen(serverPort, () => {
+  console.log(`Server on port ${serverPort} at ${new Date()}`)
+});
 
 module.exports = app;
