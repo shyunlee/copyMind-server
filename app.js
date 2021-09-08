@@ -23,7 +23,7 @@ models.sequelize.sync().then( () => {
 
 
 app.use(cors({
-    origin : ['http://localhost:3000'],
+    origin : true,
     methods : ["GET","POST","OPTIONS"],
     credentials : true
 }))
@@ -42,19 +42,19 @@ app.use( //세션 : 요청마다 개인의 저장공간
     })
 );
 
-// app.use('/', express.static(__dirname + '/public'));
-// app.get('/*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'public', 'index.html'))
-// })
+app.use('/', express.static(__dirname + '/public'));
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
 
 app.use('/sign', sign);
 app.use('/copy', copy);
 app.use('/user', user);
 app.use('/oauth', oauth);
 
-const serverPort = parseInt(process.env.PORT)
-app.listen(serverPort, () => {
-  console.log(`Server on port ${serverPort} at ${new Date()}`)
+// const serverPort = parseInt(process.env.PORT)
+app.listen(process.env.PORT, () => {
+  console.log(`Server on port ${process.env.PORT} at ${new Date()}`)
 });
 
 module.exports = app;
